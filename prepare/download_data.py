@@ -25,7 +25,7 @@ def maybe_getfrom_url(download_url: str, out_path: Path):
 
 
 if __name__ == '__main__':
-    data_url = "https://hendrikklug.xyz/nextcloud/index.php/s/feFD6ws95EDXEGK/download"
+    data_url = "http://jimmy123.hopto.org:2095/nextcloud/index.php/s/tjGTjG7TsC8J8Rk/download"
     out_path = Path(__file__).parent.parent
 
     maybe_getfrom_url(download_url=data_url, out_path=out_path)
