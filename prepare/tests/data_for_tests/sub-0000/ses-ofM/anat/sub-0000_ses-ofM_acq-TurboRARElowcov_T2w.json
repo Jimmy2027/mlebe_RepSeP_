@@ -1,0 +1,9 @@
+{
+ "FlipAngle": 90.0,
+ "Manufacturer": "Bruker BioSpin MRI GmbH",
+ "NumberOfVolumesDiscardedByScanner": 2,
+ "ReceiveCoilName": "1H-SUC T/R",
+ "RepetitionTime": 2.5,
+ "PulseSequenceType": "RARE",
+ "DelayAfterTrigger": 16.442
+}

@@ -1,0 +1,31 @@
+{
+  "workflow_config": {
+    "data_path": "/mnt/data/hendrik/mlebe_data/",
+    "with_FLASH": false,
+    "subjects": [],
+    "keep_work": true,
+    "norby": true
+  },
+  "masking_config": {
+    "masking_config_anat": {
+      "testing": true,
+      "use_cuda": false,
+      "with_bids_cropping": false,
+      "input_type": "anat",
+      "visualisation_path": "",
+      "bias_correct_bool": false,
+      "test": false,
+      "model_folder_path": ""
+    },
+    "masking_config_func": {
+      "testing": true,
+      "use_cuda": false,
+      "with_bids_cropping": false,
+      "input_type": "func",
+      "visualisation_path": "",
+      "bias_correct_bool": false,
+      "test": false,
+      "model_folder_path": ""
+    }
+  }
+}

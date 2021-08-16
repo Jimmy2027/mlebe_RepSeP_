@@ -1,0 +1,160 @@
+\section{Results}
+For the quality control of the workflow, we first evaluate the classification process, followed by a benchmark between the Generic and the improved "Masked" workflow.
+
+\subsection{Classification}
+%% Again, background or discussion
+Quality control of our classifier is difficult in the sense that the template mask does not always overlap perfectly with the brain region, such that small deviances of the predictions compared to the template could actually be caused by the prediction being more accurate than the template.
+Nevertheless, it is useful to verify whether the output is similar to the template, as it should be.
+As a similarity metric between the template mask and the classifier output we have used the Dice score (see \cref{eqDcoef}).
+The average Dice score on the test data set is $D_{coef}= $
+\py{boilerplate.print_dice()}, indicating that classifier output has only minor changes in comparison with the template.
+% todo should I give more scores? AUC, ...
+
+
+\begin{sansmath}
+    \py{pytex_fig('scripts/classifier/plt_testset_examples.py',
+    conf='article/wide.conf',
+    label='testset_ex',
+    caption='
+    \\textbf{The Classifier predicts a similar mask to the ground truth.}
+    Randomly picked plots from the test set illustrate the predictions of the classifier.
+    The first row presents the input image, the second the ground truth and the third row shows the predictions of the classifier.
+    ',
+    multicol=True,
+    )}
+\end{sansmath}
+
+\subsection{Workflow}
+\begin{sansmath}
+    \py{pytex_fig('scripts/classifier/plt_registration_comparison.py',
+    conf='article/4*2.conf',
+    label='regComp',
+    caption='
+\\textbf{The Masked workflow prevents the shifting of outer-brain region voxels into the template-brain region (in blue).} Comparison of slices from 3 different volumes, registered with the Generic (first row) and the Masked (second row) workflow.',
+    multicol=True,
+    )}
+\end{sansmath}
+
+We use an established palette of workflow evaluation metrics --- inspecting volume and smoothness conservation, as well as downstream effects on basic functional analysis \citep{ioanas_optimized_2019} --- to benchmark the novel SAMRI Masked workflow against the SAMRI Generic workflow.
+Statistics for the Volume Conservation and the Smoothness Conservation are presented with respect to the distributions of the absolute distances to the optimal value 1.
+
+A qualitative evaluation of the registered volume shows that the classifier reduces the shifting of outer brain regions into the brain region and improves the quality of the registration.
+This can be seen in \cref{fig:regComp}, comparing slices of three different registered volumes with and without the help of the classifier.
+
+\subsection{Volume Conservation}
+
+\begin{sansmath}
+    \py{pytex_subfigs(
+    [
+    {'script':'scripts/vcc_violin.py', 'label':'vccv','conf':'article/1col.conf', 'options_pre':'{.48\\textwidth}',
+    'options_pre_caption':'\\vspace{-1.5em}\\',
+    'options_post':'\\vspace{1em}',
+    'caption':'Comparison of the VCF across workflows and functional contrasts.'
+    ,},
+    {'script':'scripts/scf_violin_contrasts.py', 'label':'sccv','conf':'article/1col.conf', 'options_pre':'{.48\\textwidth}',
+    'options_pre_caption':'\\vspace{-1.5em}\\',
+    'options_post':'\\vspace{1em}',
+    'caption':'Comparison of the SCF across workflows and functional contrasts.'
+    ,},
+    {'script':'scripts/vc_violin_absdiff.py', 'label':'vcfb','conf':'article/1col.conf', 'options_pre':'{.48\\textwidth}',
+    'options_pre_caption':'\\vspace{-1.5em}\\',
+    'options_post':'\\vspace{1em}',
+    'caption':'Comparison of the distributions of the absolute VCF errors, across workflows and functional contrasts.'
+    ,},
+    {'script':'scripts/scf_violin_absdiff.py', 'label':'scfb','conf':'article/1col.conf', 'options_pre':'{.48\\textwidth}',
+    'options_pre_caption':'\\vspace{-1.5em}\\',
+    'options_post':'\\vspace{1em}',
+    'caption':'Comparison of the distributions of the absolute SCF errors, across workflows and functional contrasts.'
+    ,},
+    ],
+    caption='\\textbf{Both the SAMRI Generic and the Masked workflow optimally and reliably conserve volume and smoothness, the latter showing values that are closely distributed to 1.}
+    Plots showing the distribution of two target metrics in the first row, together with the respective distributions of the absolute distances to 1 in the second row. Solid lines in the colored distribution densities indicate the sample mean and dashed lines the inner quartiles.
+    ',
+    label='fig:vc',
+    )}
+\end{sansmath}
+
+Volume Conservation Factor (VCF) measures the registration induced deformation of the scanned brain, by computing the ratio of the brain volume before and after preprocessing.
+A positive ratio indicates that the brain was stretched to fill the template space, while a negative ratio indicates that non-brain voxels were introduced in the template brain space.
+Volume conservation is highest for a VCF equal to 1, indicating that the preprocessing has no influence on the brain volume of the scans.
+
+As seen in \cref{fig:vcfb}, we note that in the described dataset the absolute distance of the VCF to 1 is sensitive to the workflow
+(\py{boilerplate.fstatistic('Processing', dependent_variable='Abs(1 - Vcf)', expression='Processing+Contrast', condensed=True)}).
+The performance of the Generic SAMRI workflow is different from that of the Masked, yielding a two-tailed p-value of \py{pytex_printonly('scripts/vc_t.py')}.
+With respect to the data break-up by contrast (CBV versus BOLD, \cref{fig:vccv}), we see no notable main effect for the contrast variable
+(VCF of \py{boilerplate.corecomparison_factorci('Contrast[T.CBV]',dependent_variable='Abs(1 - Vcf)', expression='Processing+Contrast')}).
+%% Ok, you introduce the VCF and you show the VCF plots primarily, and then you list the stats for RMSE only? You should definitely write out the modelling evaluation for VCF. My recommendation is to write down a paragraph for the VCF evaluation, and then RMSE evaluation, plot-wise you show a composite figure with subfigures for VCF, SCF, and the respective bootstrapped RMSE.
+
+We note that there is a significant variance decrease in all conditions for the Masked workflow
+(\py{boilerplate.varianceratio()}-fold).
+Further, we note that the root mean squared error ratio favours the Masked workflow
+($\mathrm{RMSE_{M}/RMSE_{G}\simeq} \py{pytex_printonly('scripts/vc_rmser.py')}$).
+
+\subsection{Smoothness Conservation}
+
+%% Same comments as for VCF
+
+Smoothing is a popular tool employed by many preprocessing functions to increase the signal-to-noise ratio.
+Image smoothness comes at the cost of image contrast as well as feature saliency and has been shown to result in inferior anatomical alignment due to the loss of spatial resolution \citep{fmriprep}.
+As an indicator of image smothness induced by the workflow, the Smoothness Conservation Factor (SCF) expresses the ratio between the smoothness of the preprocessed images and the smoothness of the original images.
+Smoothess Conservation is highest for a SCF equal to 1, indicating that the preprocessing does not influence image smoothness.
+
+While the performance of the Generic SAMRI workflow is only slightly different from that of the Masked workflow, the root mean squared error ratio favors the Masked workflow ($\mathrm{RMSE_{M}/RMSE_{G}\simeq} \py{pytex_printonly('scripts/scf_rmser.py')}$).
+
+Descriptively, we observe that neither the Generic nor the Masked workflow introduce a strong smoothing (SCF of \py{boilerplate.factorci('Processing[T.Masked]', df_path='data/smoothness.csv',dependent_variable='Abs(1 - Scf)', expression='Processing+Contrast')}).
+
+Further, we note that there is a slight variance decrease for the Masked workflow
+(\py{boilerplate.varianceratio(df_path='data/smoothness.csv',dependent_variable='Smoothness Conservation Factor', max_len=3)}
+-fold).
+
+Given the break-up by contrast shown in \cref{fig:sccv}, we see no effect for the contrast variable
+(SCF of \py{boilerplate.corecomparison_factorci('Contrast[T.CBV]', df_path='data/smoothness.csv', dependent_variable='Abs(1 - Scf)', expression='Processing+Contrast')}).
+
+\subsection{Functional Analysis}
+
+%% Same comments as for VCF, these three sections can basically be copy-pasted in as far as the sentence structure is concerned.
+Functional Analysis expresses the significance detected across all voxels of a scan by computing the Mean Significance (MS) \cite{ioanas_optimized_2019}.
+
+We observe that the Masked level of the workflow variable does not introduce a notable significance loss
+(MS of \py{boilerplate.factorci('Processing[T.Masked]', df_path='data/functional_significance.csv', dependent_variable='Mean Significance')}).
+Furthermore, we note a slight variance decrease in all conditions for the Masked workflow
+(\py{boilerplate.varianceratio(df_path='data/functional_significance.csv', dependent_variable='Mean Significance')}-fold).
+
+With respect to the data break-up by contrast (\cref{fig:mscv}), we see no notable main effect for the contrast variable
+(MS of \py{boilerplate.corecomparison_factorci('Contrast[T.CBV]', df_path='data/functional_significance.csv', dependent_variable='Mean Significance')}).
+%and no notable effect for the contrast-template interaction
+%(MS of \py{boilerplate.corecomparison_factorci('Processing[T.Legacy]:Contrast[T.CBV]', df_path='data/functional_significance.csv', dependent_variable='Mean Significance')}).
+%
+%Functional analysis effects can further be inspected by visualizing the statistic maps.
+%Second-level t-statistic maps depicting the CBV and BOLD omnibus contrasts (common to all subjects and sessions) provide a succinct overview capturing both amplitude and directionality of the signal (\cref{fig:m}).
+%While the most salient feature of this figure is the qualitative distribution difference between CBV and BOLD scans, we note that this is to be expected given the different nature of the processes, and is wholly orthogonal to the question of registration.
+%The differential coverage is crucial to the examination of registration quality and its effects on functional read-outs.
+%We note that processing with the Generic* workflow (\cref{fig:mllc,fig:mllb}), does not induce issues with statistic coverage alignment and overflow.
+
+\subsection{Variance Analysis}
+As an additional metric for the comparison between workflows, we evaluate if physiological meaningfull variability is retained across repeated measurements.
+It is based on the assumption that adult mouse brains retain size, shape, and implant position in the absence of intervention, throughout the 8 week study period \cite{ioanas_optimized_2019}.
+Examining the similarity between the template and preprocessed scans, session-wise variability should be smaller than subject-wise variability.
+This comparison is performed using a type 3 ANOVA, modeling both the subject and the session variables.
+For this assessment three metrics are used, with maximal sensitivity to different features:
+Neighborhood Cross Correlation (CC, sensitive to localized correlation),
+Global Correlation (GC, sensitive to whole-image correlation),
+and Mutual Information (MI, sensitive to whole-image information similarity).
+
+Both, the Generic and the Masked workflow produce results which show a higher F-statistic for the subject than for the session variable.
+For the Masked workflow, F-statistics show:
+CC (subject: \py{boilerplate.variance_test('C(Subject)','Masked','CC', condensed=True)}, session: \py{boilerplate.variance_test('C(Session)','Masked','CC', condensed=True)}),
+GC (subject: \py{boilerplate.variance_test('C(Subject)','Masked','GC', condensed=True)}, session: \py{boilerplate.variance_test('C(Session)','Masked','GC', condensed=True)}),
+and MI (subject: \py{boilerplate.variance_test('C(Subject)','Masked','MI', condensed=True)}, session: \py{boilerplate.variance_test('C(Session)','Masked','MI', condensed=True)}).
+
+For the Generic SAMRI workflow, resulting data F-statistics show:
+CC (subject: \py{boilerplate.variance_test('C(Subject)','Generic','CC', condensed=True)}, session: \py{boilerplate.variance_test('C(Session)','Generic','CC', condensed=True)}),
+GC (subject: \py{boilerplate.variance_test('C(Subject)','Generic','GC', condensed=True)}, session: \py{boilerplate.variance_test('C(Session)','Generic','GC', condensed=True)}),
+and MI (subject: \py{boilerplate.variance_test('C(Subject)','Generic','MI', condensed=True)}, session: \py{boilerplate.variance_test('C(Session)','Generic','MI', condensed=True)}).
+
+
+%\section{Data and Code Availability}
+%
+%%The data archive relevant for this article is freely available \cite{mlebe_bidsdata}, and automatically accessible via the Gentoo Linux package manager.
+%In addition to the workflow code \cite{mlebe, samri}, we openly release the re-executable source code \cite{mlebe_repsep} for all statistics and figures in this document.
+%The herein introduced novel method as well as the benchmarking are thus fully transparent and reusable for further data.

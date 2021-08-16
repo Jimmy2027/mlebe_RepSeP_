@@ -1,0 +1,11 @@
+{
+ "EchoTime": 0.015,
+ "FlipAngle": 60.0,
+ "Manufacturer": "Bruker BioSpin MRI GmbH",
+ "NumberOfVolumesDiscardedByScanner": 10,
+ "ReceiveCoilName": "1H-SUC T/R",
+ "RepetitionTime": 1.0,
+ "PulseSequenceType": "EPI",
+ "DelayAfterTrigger": 59.428,
+ "TaskName": "JogB"
+}

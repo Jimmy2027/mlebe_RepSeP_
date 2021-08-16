@@ -1,0 +1,29 @@
+{
+  "workflow_config": {
+    "data_path": "/mnt/data/hendrik/mlebe_data/",
+    "with_FLASH": false,
+    "subjects": [],
+    "keep_work": true,
+    "norby": false
+  },
+  "masking_config": {
+    "masking_config_anat": {
+      "use_cuda": false,
+      "with_bids_cropping": false,
+      "input_type": "anat",
+      "bias_correct_bool": false,
+      "test": false,
+      "model_folder_path": "/home/hendrik/src/MLEBE_/mlebe/training/checkpoints/2020_7_1_8_58_40",
+      "masked_dir": "~/.scratch/mlebe/preprocessing/masked_bids"
+    },
+    "masking_config_func": {
+      "use_cuda": false,
+      "with_bids_cropping": false,
+      "input_type": "func",
+      "bias_correct_bool": false,
+      "test": false,
+      "model_folder_path": "/home/hendrik/src/MLEBE_/mlebe/training/checkpoints/2020_7_7_9_58_4",
+      "masked_dir": "~/.scratch/mlebe/preprocessing/masked_bids"
+    }
+  }
+}
