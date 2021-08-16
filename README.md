@@ -1,59 +1,78 @@
-[![RepSeP Logo](img/repsep.png?raw=true "RepSeP Logo")](https://github.com/TheChymera/RepSeP/releases/tag/0.0.1)
+# Machine Learning Enabled Brain Segmentation for Small Animal Image Registration
 
-# RepSeP
-
-The **Rep**roducible **Se**lf **P**ublishing toolkit demonstrates how to reuse your favourite data analysis workflows in order to seamlessly include quasi-dynamic publication-quality output (e.g. figures, tables, or statistic reports) in the most common science communication formats. Currently we provide examples for:
-
-* Presentation Slides
-* A Poster
-* An Article
-
-In these examples, analysis does not have to be initiated manually, and output elements do not have to be copied, manually scaled, styled, or otherwise manipulated.
-Data analysis is kept in one and only one place, and configurable styling is applied programmatically at the document or output element level.
-Data *and* code dependencies are monitored for update via checksums, and are either provided or specified, so that both the toolkit in its present incarnation - as well as your own derivatives - can be reproduced locally and autonomously by your colleagues, reviewers, students, and everybody else.
-As no binaries are tracked, publications built analogously to our examples are excellently suited for collaborative editing and version tracking, e.g. via Git.
-
-### Video Presentations
-
-* [Reproducible Self-Publishing for Python-Based Research](https://youtu.be/WbjQYBuyKdk), at EuroSciPy 2018 in Trento (IT)
-* Pitch: [Reproducible Self-Publication via PythonTeX](https://www.youtube.com/watch?v=bu9_338Q7rU), at EuroSciPy 2017 in Erlangen (DE)
-* Pitch: [Reproducible Self-Publishing](https://www.youtube.com/watch?v=8AD4mtXJhpE), at SciPy 2017 in Austin (TX,USA)
-
-## How To Self-Publish Reproducible Scientific Documents
-
-* Clone this repository: `git clone git@github.com:TheChymera/RepSeP.git`
-* Install the dependencies ([listed below](#dependencies)).
-* Edit the document files ([`article.tex`](article.tex), [`poster.tex`](poster.tex), [`slides.tex`](slides.tex)) to contain your own research output.
-* Compile the documents, e.g.: `./compile article`, `./compile poster`, `./compile slides`, `./compile all`.
-* Distribute the output and links to your fork of this repository via your favourite outreach channels.
+These are the content files used to generate scientific communication materials for the project originally titled “Improving Registration in Small Animal Brain Imaging”.
 
 ## Dependencies
 
-### Automatic Install
-
-Dependencies can be automatically installed by any package manager which respects the [Package Manager Soecification](https://dev.gentoo.org/~ulm/pms/head/pms.html).
-This is done by running the install file as root with the following commands:
+A full list of unambiguously identified dependency constraints is specified [here](.gentoo/sci-publications/mlebe/mlebe-99999.ebuild) (following the [Package Manager Specification format](https://dev.gentoo.org/~ulm/pms/head/pms.html#x1-690008.2)).
+On a Gentoo Linux system, dependencies can be automatically managed with the included install script:
 
 ```
-cd RepSeP/.gentoo
-./install.sh -oav
+su -
+cd /path/to/mlebe
+cd .gentoo
+./install.sh
+```
+### The article can be reproduced with:
+```
+git clone https://github.com/Jimmy2027/mlebe_RepSeP_.git
+cd mlebe_RepSeP_/prepare
+python downlaod_data.py
+cd ..
+./cleanup.sh
+./compile.sh
+```
+### Manual Data Download (only if automated Gentoo dependency management is unavailable)
+
+While other dependencies will very likely be available from your distribution's own package manager, the data package of this publication is probably not.
+You can manually install it via the following commands:
+
+```
+wget https://zenodo.org/record/3601531/files/irsabi_bidsdata-1.4.tar.xz
+tar xf irsabi_bidsdata-1.4.tar.xz
+mv irsabi_bidsdata-1.4 /usr/share/irsabi_bidsdata
 ```
 
-### Manual Install
+The latter command may require superuser access.
+Total install time will take upwards of an hour on personal computers with no prior neuroimaging software deployment.
 
-The most precise description of the dependency graph (including conditionality) can be extracted from the [RepSeP ebuild](.gentoo/sci-biology/repsep/repsep-99999.ebuild).
-Alternatively you may refer to the following list:
+Pretrained classifiers can be downloaded [here](https://zenodo.org/record/4031286#.X2Ry6pMzZhE) or via:
 
-* [matplotlib](https://matplotlib.org/)
-* [numpy](https://www.numpy.org/)
-* [statsmodels](https://www.statsmodels.org/stable/index.html) (>=`0.9.0`)
-* [pythontex](https://github.com/gpoore/pythontex) (>=`0.16`)
-* [texlive-latex](https://www.tug.org/texlive/)
-* [graphviz](https://www.graphviz.org/)
+```
+wget https://zenodo.org/record/4031286/files/3D_unet_EPI.zip
+wget https://zenodo.org/record/4031286/files/3D_unet_RARE.zip
+unzip 3D_unet_EPI.zip
+unzip 3D_unet_RARE.zip
+```
 
-## Examples
+## Compilation Instructions
 
-### Posters
+This is a [RepSeP](https://github.com/TheChymera/RepSeP) -style document.
+The data processing step is run asynchronously from the document compilation, and you may choose to reproduce either the top-level statistics (“demo” reproduction) or the entire analysis starting from the raw data (“full analysis stack” reproduction).
 
-* [BehavioPy Poster](https://bitbucket.org/TheChymera/behaviopy_repsep/), versions presented at:
-	* [EuroSciPy 2017](https://bitbucket.org/TheChymera/behaviopy_repsep/raw/7d626813659efa1345efbf07faafaa9a6bcf3876/poster.pdf) in Erlangen (DE)
+The data processing for the full analysis stack will by default take place in `~/.scratch`, which we suggest can be created as a symlink to a volume which has more space (at least 400GB):
+
+```
+mkdir /mnt/largevolume/.scratch
+ln -s /mnt/largevolume/.scratch ~/.scratch
+```
+
+### Top-Level Analysis
+
+```
+cd /path/to/mlebe
+./compile.sh
+```
+
+This analysis may take up to 5 minutes on personal computers.
+
+### Full Analysis Stack
+
+```
+cd /path/to/mlebe
+./produce.sh
+```
+
+This analysis may take up over 24 hours on personal computers.
+
+When running the workflow, make sure to specify the path to the folder containing the classifiers in one of the config files from `prepare/configs`. The path to the workflow config can be specified in specified `prepare/make_config.py`.
