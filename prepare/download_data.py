@@ -10,7 +10,7 @@ from pathlib import Path
 def maybe_getfrom_url(download_url: str, out_path: Path):
     """Download from url and extract to out_path if not already there."""
     filename = "data"
-    if not (out_path / filename).exists():
+    if not (out_path).exists():
         out_path.mkdir()
         print(f'{out_path} does not exist. Downloading...')
 
@@ -19,7 +19,7 @@ def maybe_getfrom_url(download_url: str, out_path: Path):
             print(f'Getting {download_url}.')
             os.system(wget_command)
 
-            unzip_command = f'unzip {tmpdirname}/{filename + ".zip"} -d {out_path}/'
+            unzip_command = f'unzip {tmpdirname}/{filename + ".zip"} -d {out_path.parent}/'
             os.system(unzip_command)
     else:
         print(f'{out_path} exists. Skipping...')
@@ -27,6 +27,6 @@ def maybe_getfrom_url(download_url: str, out_path: Path):
 
 if __name__ == '__main__':
     data_url = "http://jimmy123.hopto.org:2095/nextcloud/index.php/s/tjGTjG7TsC8J8Rk/download"
-    out_path = Path('../')
+    out_path = Path('../data')
 
     maybe_getfrom_url(download_url=data_url, out_path=out_path)
