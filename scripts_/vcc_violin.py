@@ -27,3 +27,4 @@ ax = violinplot(
     linewidth=mpl.rcParams['grid.linewidth'],
     linecolor='w',
 )
+ax.legend()
