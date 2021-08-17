@@ -2,13 +2,14 @@
 
 \title{Machine Learning Enabled Brain Segmentation for Small Animal Neuroimaging Registration}
 
-\author{Hendrik J. Klug$^{1}$,Berkan Lafci$^{2,3}$, Markus Rudin$^{4}$,Daniel Razansky$^{2,3}$, Horea-Ioan Ioanas$^{5}$}
+\author{Hendrik J. Klug$^{1,6}$,Berkan Lafci$^{2,3,6}$,Zhiva Skachokova$^{6}$, Markus Rudin$^{4}$,Daniel Razansky$^{2,3}$, Horea-Ioan Ioanas$^{5,6}$}
 \institute[ETH]{
     $^{1}$ETHZ, Department of Information Technology and Electrical Engineering, Zurich, Switzerland\\
     $^{2}$UZH, Institute of Pharmacology and Toxicology and Institute for Biomedical Engineering, Faculty of Medicine, Zurich, Switzerland\\
     $^{3}$ETHZ, Institute for Biomedical Engineering, Department of Information Technology and Electrical Engineering, Zurich, Switzerland\\
     $^{4}$ETHZ, Center for Imaging Science and Technology, Zurich, Switzerland\\
-    $^{5}$Massachusetts Institute of Technology, Department of Biological Engineering, Cambridge, United States of America
+    $^{5}$Massachusetts Institute of Technology, Department of Biological Engineering, Cambridge, United States of America\\
+    $^{6}$Institute for Biomedical Engineering, D-ITET, ETH and University of Zurich, Switzerland
 }
 
 \date{\today}
@@ -27,37 +28,55 @@
                             \begin{myblock}{Abstract}
                                 \input{poster/abstract.tex}
                             \end{myblock}\vfill
-                            \vspace{-0.3em}
+
+                            \begin{myblock}{Objectives}
+                                \begin{itemize}
+                                    \item Develop a machine learning enabled brain extraction framework that requires minimal manual input such that it can easily be adapted and extended.
+                                    \item Integrate this framework to a state-of-the-art small animal registration workflow from \cite{irsabi} and improve registration quality.
+                                \end{itemize}
+                            \end{myblock}
+
                             \begin{myblock}{Workflow integration}
-                                We lay out a preparatory step to improve brain registration by specifically extracting the brain volume from the MRI scans.
+                                We lay out a preparatory step to improve brain registration by specifically extracting the brain volume from the MRI scans (\cref{masked_worklfow_graph}).
                                 \begin{figure}
                                     \centering
-                                    \resizebox{0.98\textwidth}{!}{%
+                                    \includedot[width=\textwidth]{data/poster/masked_nipype}
+%                                    \vspace{-1.9em}
+                                    \caption{
+                                        “SAMRI Generic Masked” workflow, which is based on the \textcolor{mg}{\texttt{antsRegistration}} function from \cite{irsabi}.\\
+                                        Two additional nodes provide the workflow with both the masked data and the binary mask.
+                                    }
+                                    \label{masked_worklfow_graph}
+                                \end{figure}
+
+                                \begin{figure}
+                                    \centering
+                                    \resizebox{0.7\textwidth}{!}{%
                                         \py{pytex_printonly(script='scripts_/graphs/masking_graph.py', data = '')}
                                     }
                                     \caption{The novel SAMRI masked workflow takes as input the unprocessed nifty data as well as the mask and masked volume from the \textcolor{lg}{MLEBE} \cite{mlebe} package.}
                                 \end{figure}
-%                                \vspace{-0.3em}
-                                \begin{figure}
-                                    \centering
-                                    \resizebox{0.8\textwidth}{!}{%
-                                        \py{pytex_printonly(script='scripts_/graphs/workflow_graph.py', data = '')}
-                                    }
-                                    \caption{Flowchart describing the integration of the \textcolor{lg}{MLEBE} \cite{mlebe} package into the \textcolor{lg}{SAMRI} \cite{noauthor_ibt-fmi/samri_2019} Generic workflow.}
-                                \end{figure}
+%%                                \vspace{-0.3em}
+%                                \begin{figure}
+%                                    \centering
+%                                    \resizebox{0.4\textwidth}{!}{%
+%                                        \py{pytex_printonly(script='scripts_/graphs/workflow_graph.py', data = '')}
+%                                    }
+%                                    \caption{Flowchart describing the integration of the \textcolor{lg}{MLEBE} \cite{mlebe} package into the \textcolor{lg}{SAMRI} \cite{noauthor_ibt-fmi/samri_2019} Generic workflow.}
+%                                \end{figure}
                             \end{myblock}\vfill
 
 %                            \vspace{-0.3em}
-                            \begin{myblock}{Brain extraction algorithm}
+                            \begin{myblock}{Brain extraction framework}
                                 \begin{itemize}
                                     \item The brain extraction is done using a trained U-Net \cite{ronneberger_u-net:_2015} which predicts a binary brain mask
-                                    \item The training of the brain extraction classifier is done based on \textcolor{lg}{SAMRI} preprocessed volumes, using as ground truth the brain template the volumes were mapped onto (\cref{training_graph}) (masking priors obtained by using an unmasked workflow transformation to a template and using that template as ground truth for the training
-                                    \item Some preprocessing steps were added to create the training dataset:
+                                    \item The training of the brain extraction classifier is done based on priors obtained by an unmasked workflow transformation from \textcolor{lg}{SAMRI} \cite{irsabi} to a template and using that template as ground truth for the training
+                                    \item Some data optimization steps were added to create the training dataset:
                                     \begin{itemize}
-                                        \item Faulty volumes were manually selected and removed (the expert operators blacklisted of incorrect annotations
-                                            the transformed data was normalized (by substrancting the hwole image mean and dividing by the standard dev)
-                                            annotations extending beyond experimental data range were set to non-brain i.e. 0
-                                        \item the volumes are normalized and each voxel of the template mask is set to 0 where the voxel value of the volume is 0
+                                        \item expert operators blacklisted incorrect annotations from the priors.
+                                        \item the transformed data was normalized (by substracting the whole image mean and dividing by the standard deviation) (\cref{preprocessing_xample}).
+                                        \item annotations extending beyond experimental data range were set to non-brain i.e. 0 (\cref{preprocessing_xample}).
+
                                     \end{itemize}
                                 \end{itemize}
 
@@ -66,7 +85,7 @@
                                     \resizebox{0.8\textwidth}{!}{%
                                         \py{pytex_printonly(script='scripts_/graphs/training_graph.py', data = '')}
                                     }
-                                    \caption{Flowchart depicting the training process of the U-Net model.}
+                                    \caption{Flowchart depicting the training process of the U-Net model. Outside the blue box are the processing steps that map the data to the template reference space. Inside the blue box are shown the training steps of the U-Net model. The model predicts a mask for each preprocessed input data which is then compared to the template mask using the Dice score. The parameters of the model are then updated such that the Dice score is maximized.}
                                     \label{training_graph}
                                 \end{figure}
 
@@ -81,7 +100,8 @@
                                         \centering
                                         \includegraphics[width=\textwidth]{data/preprocessing_examples/preprocessed}
                                     \end{subfigure}
-                                    \caption{Comparison of an unprocessed slice (left) and a preprocessed slice (right) where the volume was normalized and the mask adapted to the volume.}
+                                    \caption{Comparison of an unprocessed slice (left) and a preprocessed slice (right) where the volume was normalized and the mask adapted to the nifty data.}
+                                    \label{preprocessing_xample}
                                 \end{figure}
                             \end{myblock}\vfill
 
@@ -102,60 +122,61 @@
 
                             \begin{myblock}{Results}
                                 We evaluate the effects of our classifier on a full-fledged registration workflow via the benchmarking algorithms from \cite{irsabi}.
-                                Additionally, we show a qualitative comparison between slice of Volumes registered with our Masked and the Generic workflow in
+                                Additionally, we show a qualitative comparison between data processed with our Masked and data processed with the Generic workflow in \cref{reg_comp}.
                                 \begin{figure}
 %                                    \centering
-                                    \includegraphics[width=0.6\textwidth]{data/reg_comp}
-                                    \caption{\textbf{The masked workflow accurately transforms the image and accurately transforms the image with respect to } Comparison of slices from 3 different volumes, registered with the Generic (first row) and the Masked (second row) workflow.}
+                                    \includegraphics[width=0.4\textwidth]{data/reg_comp}
+                                    \caption{\textbf{The masked workflow accurately transforms the image to the template space.} The comparison of the Generic (first row) and the Masked (second row) workflow shows that the masked workflow accurately maps the brain region to the template and prevents the inclusion of non-brain voxels.}
+                                    \label{reg_comp}
                                 \end{figure}
 
                                 \begin{figure}
                                     \includegraphics[width=0.8\textwidth]{data/testset_examples_small}
                                     \caption{\textbf{The Classifier predicts a similar mask to the ground truth.}
-                                    Randomly picked plots from the test set illustrate the predictions of the classifier.
-                                    The first row presents the input image, the second the ground truth and the third row shows the predictions of the classifier.}
+                                    Randomly picked plots from the test set illustrate the predictions of the classifier (shown in red) in contrast to the template mask (shown in green).
+                                    The overlap of the predicted mask and the template mask is shown in grey.}
                                 \end{figure}
 
 
                                 \begin{sansmath}
                                     \py{pytex_subfigs(
                                         [
-                                            {'script':'scripts_/vcc_violin.py', 'label':'vccv','conf':'article/1col.conf', 'options_pre':'{.48\\textwidth}',
-                                        'options_pre_caption':'\\vspace{-1.5em}\\',
+                                            {'script':'scripts_/vcc_violin.py', 'label':'vccv','conf':'poster/1col.conf', 'options_pre':'{.48\\textwidth}',
+                                        'options_pre_caption':'\\vspace{1em}\\',
                                         'options_post':'\\vspace{1em}',
                                         'caption':'Comparison of the VCF across workflows and functional contrasts.'
                                         ,},
-                                            {'script':'scripts_/scf_violin_contrasts.py', 'label':'sccv','conf':'article/1col.conf', 'options_pre':'{.48\\textwidth}',
-                                        'options_pre_caption':'\\vspace{-1.5em}\\',
+                                            {'script':'scripts_/scf_violin_contrasts.py', 'label':'sccv','conf':'poster/1col.conf', 'options_pre':'{.48\\textwidth}',
+                                        'options_pre_caption':'\\vspace{1em}\\',
                                         'options_post':'\\vspace{1em}',
                                         'caption':'Comparison of the SCF across workflows and functional contrasts.'
                                         ,},
-                                            {'script':'scripts_/vc_violin_absdiff.py', 'label':'vcfb','conf':'article/1col.conf', 'options_pre':'{.48\\textwidth}',
-                                        'options_pre_caption':'\\vspace{-1.5em}\\',
+                                            {'script':'scripts_/vc_violin_absdiff.py', 'label':'vcfb','conf':'poster/1col.conf', 'options_pre':'{.48\\textwidth}',
+                                        'options_pre_caption':'\\vspace{1em}\\',
                                         'options_post':'\\vspace{1em}',
                                         'caption':'Comparison of the distributions of the absolute VCF errors, across workflows and functional contrasts.'
                                         ,},
-                                            {'script':'scripts_/scf_violin_absdiff.py', 'label':'scfb','conf':'article/1col.conf', 'options_pre':'{.48\\textwidth}',
-                                        'options_pre_caption':'\\vspace{-1.5em}\\',
+                                            {'script':'scripts_/scf_violin_absdiff.py', 'label':'scfb','conf':'poster/1col.conf', 'options_pre':'{.48\\textwidth}',
+                                        'options_pre_caption':'\\vspace{1em}\\',
                                         'options_post':'\\vspace{1em}',
                                         'caption':'Comparison of the distributions of the absolute SCF errors, across workflows and functional contrasts.'
                                         ,},
                                         ],
                                         caption='\\textbf{Both the SAMRI Generic and the Masked workflow optimally and reliably conserve volume and smoothness, the latter showing values that are closely distributed to 1.}
-                                        Plots showing the distribution of two target metrics in the first row, together with the respective distributions of the absolute distances to 1 in the second row. Solid lines in the colored distribution densities indicate the sample mean and dashed lines the inner quartiles.
+                                        Plots showing the distribution of two target metrics in the first row, together with the respective distributions of the absolute distances to 1 in the second row. Dashed lines in the colored distribution densities indicate the sample mean and dashed lines the inner quartiles.
                                         ',
                                         label='fig:vc',
-	                                environment='figure',
+                                        environment='figure',
                                         )}
                                 \end{sansmath}
                             \end{myblock}
 
                             \begin{myblock}{Results and Discussion}
                                 \begin{itemize}
-                                    \item Adding a brain extraction step to the SAMRI workflow significantly improves registration accuracy as shown with volume conservation and smoothness conservation metrics as well as a qualitative evaluation
+                                    \item Adding a brain extraction step to the SAMRI workflow considerably improves registration accuracy as shown with volume conservation and smoothness conservation metrics as well as a qualitative evaluation.
                                     \item The brain extraction classifier is trained with data that is preprocessed with the SAMRI registration workflow such that no manual labeling is required.
-                                    The classifier can thus be easily trained further with additional data that can be obtained via the novel SAMRI Masked workflow
-                                    \item The FOSS distribution model for both the classifier and workflow, as well as the article, allows users to easily take advantage of the classifier extendability and recreate the steps described herein
+                                    The classifier can thus be easily trained further with additional data that can be obtained via the novel SAMRI Masked workflow.
+                                    \item The FOSS distribution model for both the classifier and workflow, as well as the article, allows users to easily take advantage of the classifier extendability and recreate the steps described herein.
                                     \item We make the functions publically available used for the masking in the workflow as well as those used to train the classifier, through the \textcolor{mg}{mlebe} python package \cite{mlebe}.
 
                                 \end{itemize}
