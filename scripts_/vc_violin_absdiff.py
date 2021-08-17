@@ -9,8 +9,6 @@ df = pd.read_csv(volume_path)
 df = df.loc[df['Processing'] != 'Unprocessed']
 df = df.loc[((df['Processing'] == 'Masked') | (df['Processing'] == 'Generic'))]
 
-df.loc[df['Processing'] == 'Unprocessed'] = ''
-
 ax = violinplot(
     x='Contrast',
     y='Abs(1 - Vcf)',
@@ -26,3 +24,4 @@ ax = violinplot(
     linewidth=mpl.rcParams['grid.linewidth'],
     linecolor='w',
 )
+ax.legend()

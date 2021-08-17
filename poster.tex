@@ -35,7 +35,7 @@
                                     \resizebox{0.98\textwidth}{!}{%
                                         \py{pytex_printonly(script='scripts_/graphs/masking_graph.py', data = '')}
                                     }
-                                    \caption{The novel SAMRI masked workflow takes as input the unprocess BIDS volume as well as the mask and masked volume from the \textcolor{lg}{MLEBE} \cite{mlebe} package.}
+                                    \caption{The novel SAMRI masked workflow takes as input the unprocessed nifty data as well as the mask and masked volume from the \textcolor{lg}{MLEBE} \cite{mlebe} package.}
                                 \end{figure}
 %                                \vspace{-0.3em}
                                 \begin{figure}
@@ -50,11 +50,13 @@
 %                            \vspace{-0.3em}
                             \begin{myblock}{Brain extraction algorithm}
                                 \begin{itemize}
-                                    \item The brain extraction is done using a trained U-Net \cite{ronneberger_u-net:_2015} which predicts a binary mask over the brain region
-                                    \item The training of the brain extraction classifier is done with \textcolor{lg}{SAMRI} preprocessed volumes, using as ground truth the brain template the volumes were mapped onto (\cref{training_graph})
+                                    \item The brain extraction is done using a trained U-Net \cite{ronneberger_u-net:_2015} which predicts a binary brain mask
+                                    \item The training of the brain extraction classifier is done based on \textcolor{lg}{SAMRI} preprocessed volumes, using as ground truth the brain template the volumes were mapped onto (\cref{training_graph}) (masking priors obtained by using an unmasked workflow transformation to a template and using that template as ground truth for the training
                                     \item Some preprocessing steps were added to create the training dataset:
                                     \begin{itemize}
-                                        \item Faulty volumes were manually selected and removed
+                                        \item Faulty volumes were manually selected and removed (the expert operators blacklisted of incorrect annotations
+                                            the transformed data was normalized (by substrancting the hwole image mean and dividing by the standard dev)
+                                            annotations extending beyond experimental data range were set to non-brain i.e. 0
                                         \item the volumes are normalized and each voxel of the template mask is set to 0 where the voxel value of the volume is 0
                                     \end{itemize}
                                 \end{itemize}
@@ -99,12 +101,12 @@
 
 
                             \begin{myblock}{Results}
-                                We evaluate the effects of our classifier on a full-fledged registration workflow via the benchmarking algorithms from \cite{ioanas_optimized_2019}.
+                                We evaluate the effects of our classifier on a full-fledged registration workflow via the benchmarking algorithms from \cite{irsabi}.
                                 Additionally, we show a qualitative comparison between slice of Volumes registered with our Masked and the Generic workflow in
                                 \begin{figure}
 %                                    \centering
                                     \includegraphics[width=0.6\textwidth]{data/reg_comp}
-                                    \caption{\textbf{The Masked workflow prevents the shifting of outer-brain region voxels into the template-brain region (in blue).} Comparison of slices from 3 different volumes, registered with the Generic (first row) and the Masked (second row) workflow.}
+                                    \caption{\textbf{The masked workflow accurately transforms the image and accurately transforms the image with respect to } Comparison of slices from 3 different volumes, registered with the Generic (first row) and the Masked (second row) workflow.}
                                 \end{figure}
 
                                 \begin{figure}
@@ -115,45 +117,46 @@
                                 \end{figure}
 
 
-%                                \begin{sansmath}
-%                                    \py{pytex_subfigs(
-%                                        [
-%                                            {'script':'scripts_/vcc_violin.py', 'label':'vccv','conf':'article/1col.conf', 'options_pre':'{.48\\textwidth}',
-%                                        'options_pre_caption':'\\vspace{-1.5em}\\',
-%                                        'options_post':'\\vspace{1em}',
-%                                        'caption':'Comparison of the VCF across workflows and functional contrasts.'
-%                                        ,},
-%                                            {'script':'scripts_/scf_violin_contrasts.py', 'label':'sccv','conf':'article/1col.conf', 'options_pre':'{.48\\textwidth}',
-%                                        'options_pre_caption':'\\vspace{-1.5em}\\',
-%                                        'options_post':'\\vspace{1em}',
-%                                        'caption':'Comparison of the SCF across workflows and functional contrasts.'
-%                                        ,},
-%                                            {'script':'scripts_/vc_violin_absdiff.py', 'label':'vcfb','conf':'article/1col.conf', 'options_pre':'{.48\\textwidth}',
-%                                        'options_pre_caption':'\\vspace{-1.5em}\\',
-%                                        'options_post':'\\vspace{1em}',
-%                                        'caption':'Comparison of the distributions of the absolute VCF errors, across workflows and functional contrasts.'
-%                                        ,},
-%                                            {'script':'scripts_/scf_violin_absdiff.py', 'label':'scfb','conf':'article/1col.conf', 'options_pre':'{.48\\textwidth}',
-%                                        'options_pre_caption':'\\vspace{-1.5em}\\',
-%                                        'options_post':'\\vspace{1em}',
-%                                        'caption':'Comparison of the distributions of the absolute SCF errors, across workflows and functional contrasts.'
-%                                        ,},
-%                                        ],
-%                                        caption='\\textbf{Both the SAMRI Generic and the Masked workflow optimally and reliably conserve volume and smoothness, the latter showing values that are closely distributed to 1.}
-%                                        Plots showing the distribution of two target metrics in the first row, together with the respective distributions of the absolute distances to 1 in the second row. Solid lines in the colored distribution densities indicate the sample mean and dashed lines the inner quartiles.
-%                                        ',
-%                                        label='fig:vc',
-%                                        )}
-%                                \end{sansmath}
+                                \begin{sansmath}
+                                    \py{pytex_subfigs(
+                                        [
+                                            {'script':'scripts_/vcc_violin.py', 'label':'vccv','conf':'article/1col.conf', 'options_pre':'{.48\\textwidth}',
+                                        'options_pre_caption':'\\vspace{-1.5em}\\',
+                                        'options_post':'\\vspace{1em}',
+                                        'caption':'Comparison of the VCF across workflows and functional contrasts.'
+                                        ,},
+                                            {'script':'scripts_/scf_violin_contrasts.py', 'label':'sccv','conf':'article/1col.conf', 'options_pre':'{.48\\textwidth}',
+                                        'options_pre_caption':'\\vspace{-1.5em}\\',
+                                        'options_post':'\\vspace{1em}',
+                                        'caption':'Comparison of the SCF across workflows and functional contrasts.'
+                                        ,},
+                                            {'script':'scripts_/vc_violin_absdiff.py', 'label':'vcfb','conf':'article/1col.conf', 'options_pre':'{.48\\textwidth}',
+                                        'options_pre_caption':'\\vspace{-1.5em}\\',
+                                        'options_post':'\\vspace{1em}',
+                                        'caption':'Comparison of the distributions of the absolute VCF errors, across workflows and functional contrasts.'
+                                        ,},
+                                            {'script':'scripts_/scf_violin_absdiff.py', 'label':'scfb','conf':'article/1col.conf', 'options_pre':'{.48\\textwidth}',
+                                        'options_pre_caption':'\\vspace{-1.5em}\\',
+                                        'options_post':'\\vspace{1em}',
+                                        'caption':'Comparison of the distributions of the absolute SCF errors, across workflows and functional contrasts.'
+                                        ,},
+                                        ],
+                                        caption='\\textbf{Both the SAMRI Generic and the Masked workflow optimally and reliably conserve volume and smoothness, the latter showing values that are closely distributed to 1.}
+                                        Plots showing the distribution of two target metrics in the first row, together with the respective distributions of the absolute distances to 1 in the second row. Solid lines in the colored distribution densities indicate the sample mean and dashed lines the inner quartiles.
+                                        ',
+                                        label='fig:vc',
+	                                environment='figure',
+                                        )}
+                                \end{sansmath}
                             \end{myblock}
 
                             \begin{myblock}{Results and Discussion}
                                 \begin{itemize}
                                     \item Adding a brain extraction step to the SAMRI workflow significantly improves registration accuracy as shown with volume conservation and smoothness conservation metrics as well as a qualitative evaluation
                                     \item The brain extraction classifier is trained with data that is preprocessed with the SAMRI registration workflow such that no manual labeling is required.
-                                    The classifier can thus be easily be trained further with additional data that can be obtained via the the novel SAMRI Masked workflow
+                                    The classifier can thus be easily trained further with additional data that can be obtained via the novel SAMRI Masked workflow
                                     \item The FOSS distribution model for both the classifier and workflow, as well as the article, allows users to easily take advantage of the classifier extendability and recreate the steps described herein
-                                    \item We make public the functions used for the masking in the workflow as well as those used to train the classifier, through the \textcolor{mg}{mlebe} python package \cite{mlebe}.
+                                    \item We make the functions publically available used for the masking in the workflow as well as those used to train the classifier, through the \textcolor{mg}{mlebe} python package \cite{mlebe}.
 
                                 \end{itemize}
                             \end{myblock}\vfill

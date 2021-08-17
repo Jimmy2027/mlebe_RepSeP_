@@ -33,6 +33,6 @@ for key, nbr_images in {'small': 6, 'big': 13}.items():
             patch = np.vstack((patch, patches[i]))
         image = np.vstack(patches)
         plt.figure()
-        plt.imshow(image, cmap='gray')
+        plt.imshow(image, cmap='gray_r')
         plt.axis('off')
         plt.savefig(data_dir / f'testset_examples_{key}.png', bbox_inches='tight', pad_inches=0)

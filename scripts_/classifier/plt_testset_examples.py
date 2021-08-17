@@ -31,6 +31,6 @@ for img in range(len(list[0])):
         patch = np.vstack((patch, patches[i]))
     image = np.vstack(patches)
     plt.figure()
-    plt.imshow(image, cmap='gray')
+    plt.imshow(image, cmap='gray_r')
     plt.axis('off')
 
