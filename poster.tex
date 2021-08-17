@@ -31,20 +31,21 @@
 
                             \begin{myblock}{Objectives}
                                 \begin{itemize}
-                                    \item Develop a machine learning enabled brain extraction framework that requires minimal manual input such that it can easily be adapted and extended.
+                                    \item Develop a machine learning enabled brain extraction framework based on prior data from a non-masked registration workflow.
                                     \item Integrate this framework to a state-of-the-art small animal registration workflow from \cite{irsabi} and improve registration quality.
                                 \end{itemize}
                             \end{myblock}
 
                             \begin{myblock}{Workflow integration}
                                 We lay out a preparatory step to improve brain registration by specifically extracting the brain volume from the MRI scans (\cref{masked_worklfow_graph}).
+                                \vspace{-1.4em}
                                 \begin{figure}
                                     \centering
                                     \includedot[width=\textwidth]{data/poster/masked_nipype}
-%                                    \vspace{-1.9em}
+                                    \vspace{-1.9em}
                                     \caption{
                                         “SAMRI Generic Masked” workflow, which is based on the \textcolor{mg}{\texttt{antsRegistration}} function from \cite{irsabi}.\\
-                                        Two additional nodes provide the workflow with both the masked data and the binary mask.
+                                        Two additional nodes (shown in blue) provide the workflow with both the masked data and the binary mask.
                                     }
                                     \label{masked_worklfow_graph}
                                 \end{figure}
@@ -54,7 +55,7 @@
                                     \resizebox{0.7\textwidth}{!}{%
                                         \py{pytex_printonly(script='scripts_/graphs/masking_graph.py', data = '')}
                                     }
-                                    \caption{The novel SAMRI masked workflow takes as input the unprocessed nifty data as well as the mask and masked volume from the \textcolor{lg}{MLEBE} \cite{mlebe} package.}
+                                    \caption{The masking is performed with the \textcolor{lg}{MLEBE} \cite{mlebe} package which takes as input the unprocessed data and gives as output the masked data together with the binary mask. Both are used to restrict the computation of the transformation towards the reference space inside the brain area in the \textcolor{lg}{SAMRI} \cite{irsabi} package.}
                                 \end{figure}
 %%                                \vspace{-0.3em}
 %                                \begin{figure}
@@ -69,37 +70,42 @@
 %                            \vspace{-0.3em}
                             \begin{myblock}{Brain extraction framework}
                                 \begin{itemize}
-                                    \item The brain extraction is done using a trained U-Net \cite{ronneberger_u-net:_2015} which predicts a binary brain mask
+                                    \item The brain region extraction is done using a trained 3D U-Net \cite{ronneberger_u-net:_2015} which predicts a binary brain mask
                                     \item The training of the brain extraction classifier is done based on priors obtained by an unmasked workflow transformation from \textcolor{lg}{SAMRI} \cite{irsabi} to a template and using that template as ground truth for the training
                                     \item Some data optimization steps were added to create the training dataset:
                                     \begin{itemize}
                                         \item expert operators blacklisted incorrect annotations from the priors.
                                         \item the transformed data was normalized (by substracting the whole image mean and dividing by the standard deviation) (\cref{preprocessing_xample}).
                                         \item annotations extending beyond experimental data range were set to non-brain i.e. 0 (\cref{preprocessing_xample}).
+                                        \item some random transformations were performed to augment the data such as rotations of up to 20$^{\circ}$, a random bias field added on the images and horizontal as well as vertical flips.
 
                                     \end{itemize}
                                 \end{itemize}
 
+                                \vspace{1em}
+
                                 \begin{figure}
                                     \centering
-                                    \resizebox{0.8\textwidth}{!}{%
+                                    \resizebox{0.98\textwidth}{!}{%
                                         \py{pytex_printonly(script='scripts_/graphs/training_graph.py', data = '')}
                                     }
+                                    \vspace{0.5em}
                                     \caption{Flowchart depicting the training process of the U-Net model. Outside the blue box are the processing steps that map the data to the template reference space. Inside the blue box are shown the training steps of the U-Net model. The model predicts a mask for each preprocessed input data which is then compared to the template mask using the Dice score. The parameters of the model are then updated such that the Dice score is maximized.}
                                     \label{training_graph}
                                 \end{figure}
 
                                 \begin{figure}
                                     \centering
-                                    \begin{subfigure}{0.4\textwidth}
+                                    \begin{subfigure}{0.25\textwidth}
                                         \centering
                                         \includegraphics[width=\textwidth]{data/preprocessing_examples/unpreprocessed}
                                     \end{subfigure}
-%                                    \hfill
-                                    \begin{subfigure}{0.4\textwidth}
+                                    \hspace{2em}
+                                    \begin{subfigure}{0.25\textwidth}
                                         \centering
                                         \includegraphics[width=\textwidth]{data/preprocessing_examples/preprocessed}
                                     \end{subfigure}
+                                    \vspace{0.5em}
                                     \caption{Comparison of an unprocessed slice (left) and a preprocessed slice (right) where the volume was normalized and the mask adapted to the nifty data.}
                                     \label{preprocessing_xample}
                                 \end{figure}
@@ -122,7 +128,7 @@
 
                             \begin{myblock}{Results}
                                 We evaluate the effects of our classifier on a full-fledged registration workflow via the benchmarking algorithms from \cite{irsabi}.
-                                Additionally, we show a qualitative comparison between data processed with our Masked and data processed with the Generic workflow in \cref{reg_comp}.
+                                Additionally, we show a qualitative comparison between data processed with our Masked workflow and data processed with the Generic workflow in \cref{reg_comp}.
                                 \begin{figure}
 %                                    \centering
                                     \includegraphics[width=0.4\textwidth]{data/reg_comp}
@@ -176,7 +182,7 @@
                                     \item Adding a brain extraction step to the SAMRI workflow considerably improves registration accuracy as shown with volume conservation and smoothness conservation metrics as well as a qualitative evaluation.
                                     \item The brain extraction classifier is trained with data that is preprocessed with the SAMRI registration workflow such that no manual labeling is required.
                                     The classifier can thus be easily trained further with additional data that can be obtained via the novel SAMRI Masked workflow.
-                                    \item The FOSS distribution model for both the classifier and workflow, as well as the article, allows users to easily take advantage of the classifier extendability and recreate the steps described herein.
+                                    \item The FOSS distribution model \cite{repsep} for both the classifier and workflow, as well as the article, allows users to easily take advantage of the classifier extendability and recreate the steps described herein.
                                     \item We make the functions publically available used for the masking in the workflow as well as those used to train the classifier, through the \textcolor{mg}{mlebe} python package \cite{mlebe}.
 
                                 \end{itemize}
