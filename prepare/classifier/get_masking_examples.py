@@ -23,25 +23,25 @@ preprocessed_volume = np.array(nib.load(preprocessed_volume_path).dataobj)
 
 slice_idx = 10
 
-save_dir = Path(__file__).parent.parent.parent / 'data/masking_examples'
+save_dir = Path('../data') / 'masking_examples'
 save_dir.mkdir(exist_ok=True)
 
-plt.imshow(np.swapaxes(bids_volume[..., slice_idx], 0, 1), cmap='Gray_r')
+plt.imshow(np.swapaxes(bids_volume[..., slice_idx], 0, 1), cmap='gray_r')
 plt.axis('off')
 plt.savefig(save_dir / 'bids_image.png', bbox_inches='tight', pad_inches=0)
 plt.close()
 
-plt.imshow(np.swapaxes(masked_bids_volume[..., slice_idx], 0, 1), cmap='Gray_r')
+plt.imshow(np.swapaxes(masked_bids_volume[..., slice_idx], 0, 1), cmap='gray_r')
 plt.axis('off')
 plt.savefig(save_dir / 'masked_bids_image.png', bbox_inches='tight', pad_inches=0)
 plt.close()
 
-plt.imshow(np.swapaxes(mask_volume[..., slice_idx], 0, 1), cmap='Gray_r')
+plt.imshow(np.swapaxes(mask_volume[..., slice_idx], 0, 1), cmap='gray_r')
 plt.axis('off')
 plt.savefig(save_dir / 'mask_image.png', bbox_inches='tight', pad_inches=0)
 plt.close()
 
-plt.imshow(ndimage.rotate(np.swapaxes(preprocessed_volume, 1, 0)[56, ...], 90), cmap='Gray_r')
+plt.imshow(ndimage.rotate(np.swapaxes(preprocessed_volume, 1, 0)[56, ...], 90), cmap='gray_r')
 plt.axis('off')
 plt.savefig(save_dir / 'preprocessed_image.png', bbox_inches='tight', pad_inches=0)
 plt.close()
