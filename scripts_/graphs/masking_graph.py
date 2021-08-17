@@ -27,8 +27,8 @@ pic = tikz.Picture(
 
 pic.set_node(text=nodes.bids_image, name='bids')
 pic.set_node(name='placeholder1', options='right of=bids, xshift=8cm')
-pic.set_node(text=nodes.masked_image, options='above of=placeholder1, yshift=3cm, xshift=3cm', name='masked')
-pic.set_node(text=nodes.mask, options='below of=placeholder1, yshift=-3cm, xshift=3cm', name='mask')
+pic.set_node(text=nodes.masked_image, options='above of=placeholder1, yshift=2cm, xshift=3cm', name='masked')
+pic.set_node(text=nodes.mask, options='below of=placeholder1, yshift=-2cm, xshift=3cm', name='mask')
 pic.set_node(name='placeholder2', options='right of=placeholder1, xshift=5cm')
 pic.set_node(text=nodes.preprocessed_image, options='right of=placeholder2,  xshift=8cm', name='preprocessed_image')
 
