@@ -7,11 +7,13 @@ from matplotlib import pyplot as plt
 
 table = pd.DataFrame(
     [['sub-4005_ses-ofMaF_acq-TurboRARElowcov_T2w', 61], ['sub-4001_ses-ofMcF2_acq-TurboRARElowcov_T2w', 42],
-     ['sub-4001_ses-ofMcF2_acq-TurboRARElowcov_T2w', 33]], columns=['volume', 'slice'], index=[1, 2, 3])
+     ['sub-4001_ses-ofMcF2_acq-TurboRARElowcov_T2w', 41], ['sub-4001_ses-ofMcF2_acq-TurboRARElowcov_T2w', 61],
+     ['sub-4009_ses-ofMcF1_acq-TurboRARElowcov_T2w', 61],
+     ['sub-4001_ses-ofMcF2_acq-TurboRARElowcov_T2w', 33]], columns=['volume', 'slice'], index=[1, 2, 3, 4, 5, 6])
 
 preprocessed_folders = [os.path.expanduser('~/.scratch/hendrik/mlebe_threed/preprocessing/generic'),
                         os.path.expanduser('~/.scratch/hendrik/mlebe_threed/preprocessing/masked')]
-# template_path = get_template_path()
+
 template_path = '/usr/share/mouse-brain-atlases/dsurqec_200micron_mask.nii'
 template_volume = nib.load(template_path).dataobj
 
@@ -29,26 +31,20 @@ for preprocessed_folder in preprocessed_folders:
                 elif 'masked' in file_path:
                     table.loc[table['volume'] == file.split('.')[0], 'masked_path'] = file_path
 
-fig, axs = plt.subplots(nrows=2, ncols=4,
-                        subplot_kw={'xticks': [], 'yticks': []})
+save_dir = Path(__file__).parent.parent.parent / 'data/reg_comp'
+save_dir.mkdir(exist_ok=True)
 
-for idx, ax in enumerate(axs.flat[:4]):
-    if idx == 0:
-        ax.text(0.5, 0.5, 'Generic', size=15, ha='center', va='center')
-        ax.axis("off")
-    else:
-        volume = nib.load(table.iloc[idx - 1]['generic_path']).dataobj
-        ax.imshow(volume[:, table.iloc[idx - 1]['slice'], :], cmap='gray')
-        ax.imshow(template_volume[:, table.iloc[idx - 1]['slice'], :], alpha=0.4, cmap='Blues')
-for idx, ax in enumerate(axs.flat[4:]):
-    if idx == 0:
-        ax.text(0.5, 0.5, 'Masked', size=15, ha='center', va='center')
-        ax.axis("off")
-    else:
-        volume = nib.load(table.iloc[idx - 1]['masked_path']).dataobj
-        ax.imshow(volume[:, table.iloc[idx - 1]['slice'], :], cmap='gray')
-        ax.imshow(template_volume[:, table.iloc[idx - 1]['slice'], :], alpha=0.4, cmap='Blues')
-
-save_path = Path(__file__).parent.parent.parent / 'data/reg_comp.png'
-
-plt.savefig(save_path, bbox_inches='tight', pad_inches=0)
+for idx, row in table.iterrows():
+    volume = nib.load(row['generic_path']).dataobj
+    plt.imshow(volume[:, row.slice, :], cmap='gray_r')
+    plt.imshow(template_volume[:, row.slice, :], alpha=0.4, cmap='Blues')
+    plt.axis('off')
+    plt.savefig(save_dir / f'generic_{str(Path(row["generic_path"]).name).replace(".nii.gz", "")}_{row.slice}.png', bbox_inches='tight',
+                pad_inches=0)
+    plt.close()
+    volume = nib.load(row['masked_path']).dataobj
+    plt.imshow(volume[:, row.slice, :], cmap='gray_r')
+    plt.imshow(template_volume[:, row.slice, :], alpha=0.4, cmap='Blues')
+    plt.axis('off')
+    plt.savefig(save_dir / f'masked_{str(Path(row["masked_path"]).name).replace(".nii.gz", "")}_{row.slice}.png', bbox_inches='tight', pad_inches=0)
+    plt.close()

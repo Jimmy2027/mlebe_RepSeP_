@@ -19,7 +19,9 @@ from matplotlib import pyplot as plt
 
 table = pd.DataFrame(
     [['sub-4005_ses-ofMaF_acq-TurboRARElowcov_T2w', 61], ['sub-4001_ses-ofMcF2_acq-TurboRARElowcov_T2w', 42],
-     ['sub-4001_ses-ofMcF2_acq-TurboRARElowcov_T2w', 33]], columns=['volume', 'slice'], index=[1, 2, 3])
+     ['sub-4001_ses-ofMcF2_acq-TurboRARElowcov_T2w', 41], ['sub-4001_ses-ofMcF2_acq-TurboRARElowcov_T2w', 61],
+     ['sub-4009_ses-ofMcF1_acq-TurboRARElowcov_T2w', 61],
+     ['sub-4001_ses-ofMcF2_acq-TurboRARElowcov_T2w', 33]], columns=['volume', 'slice'], index=[1, 2, 3, 4, 5, 6])
 
 preprocessed_folders = [os.path.expanduser('~/.scratch/hendrik/mlebe_threed/preprocessing/generic'),
                         os.path.expanduser('~/.scratch/hendrik/mlebe_threed/preprocessing/masked')]
@@ -41,27 +43,26 @@ for preprocessed_folder in preprocessed_folders:
                 elif 'masked' in file_path:
                     table.loc[table['volume'] == file.split('.')[0], 'masked_path'] = file_path
 
-fig, axs = plt.subplots(nrows=2, ncols=4,
+ncols = 7
+fig, axs = plt.subplots(nrows=2, ncols=ncols,
                         subplot_kw={'xticks': [], 'yticks': []})
 
-
-for idx, ax in enumerate(axs.flat[:4]):
+for idx, ax in enumerate(axs.flat[:ncols]):
     if idx == 0:
         ax.text(0.5, 0.5, 'Generic', size=15, ha='center', va='center')
         ax.axis("off")
     else:
         volume = nib.load(table.iloc[idx - 1]['generic_path']).dataobj
-        ax.imshow(volume[:, table.iloc[idx - 1]['slice'], :], cmap='gray')
-        ax.imshow(template_volume[:, table.iloc[idx - 1]['slice'], :], alpha=0.7, cmap='Blues')
-for idx, ax in enumerate(axs.flat[4:]):
+        ax.imshow(volume[:, table.iloc[idx - 1]['slice'], :], cmap='gray_r')
+        ax.imshow(template_volume[:, table.iloc[idx - 1]['slice'], :], alpha=0.4, cmap='Blues')
+for idx, ax in enumerate(axs.flat[ncols:]):
     if idx == 0:
         ax.text(0.5, 0.5, 'Masked', size=15, ha='center', va='center')
         ax.axis("off")
     else:
         volume = nib.load(table.iloc[idx - 1]['masked_path']).dataobj
-        ax.imshow(volume[:, table.iloc[idx - 1]['slice'], :], cmap='gray')
-        ax.imshow(template_volume[:, table.iloc[idx - 1]['slice'], :], alpha=0.7, cmap='Blues')
-
+        ax.imshow(volume[:, table.iloc[idx - 1]['slice'], :], cmap='gray_r')
+        ax.imshow(template_volume[:, table.iloc[idx - 1]['slice'], :], alpha=0.4, cmap='Blues')
 
 # plt.savefig('temp_.png')
 plt.show()

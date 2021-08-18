@@ -11,7 +11,6 @@ df = pd.read_csv(volume_path)
 df = df.loc[df['Processing'] != 'Unprocessed']
 df = df.loc[((df['Processing'] == 'Masked') | (df['Processing'] == 'Generic'))]
 
-
 ax = violinplot(
     x='Contrast',
     y='Volume Conservation Factor',

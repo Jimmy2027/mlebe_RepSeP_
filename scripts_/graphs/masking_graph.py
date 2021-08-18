@@ -12,10 +12,10 @@ preprocessed_image_path = img_dir / 'preprocessed_image.png'
 
 @dataclass
 class Nodes:
-    bids_image: str = f'\\includegraphics[width=6cm]{{{str(bids_image_path)}}}'
-    masked_image: str = f'\\includegraphics[width=5cm]{{{str(masked_bids_image_path)}}}'
-    mask: str = f'\\includegraphics[width=5cm]{{{str(mask_path)}}}'
-    preprocessed_image: str = f'\\includegraphics[width=7cm]{{{str(preprocessed_image_path)}}}'
+    bids_image: str = f'\\includegraphics[width=7cm]{{{str(bids_image_path)}}}'
+    masked_image: str = f'\\includegraphics[width=3cm]{{{str(masked_bids_image_path)}}}'
+    mask: str = f'\\includegraphics[width=3cm]{{{str(mask_path)}}}'
+    preprocessed_image: str = f'\\includegraphics[width=8cm]{{{str(preprocessed_image_path)}}}'
 
 
 nodes = Nodes()
@@ -27,8 +27,8 @@ pic = tikz.Picture(
 
 pic.set_node(text=nodes.bids_image, name='bids')
 pic.set_node(name='placeholder1', options='right of=bids, xshift=8cm')
-pic.set_node(text=nodes.masked_image, options='above of=placeholder1, yshift=2cm, xshift=3cm', name='masked')
-pic.set_node(text=nodes.mask, options='below of=placeholder1, yshift=-2cm, xshift=3cm', name='mask')
+pic.set_node(text=nodes.masked_image, options='above of=placeholder1, yshift=1.5cm, xshift=3cm', name='masked')
+pic.set_node(text=nodes.mask, options='below of=placeholder1, yshift=-1.5cm, xshift=3cm', name='mask')
 pic.set_node(name='placeholder2', options='right of=placeholder1, xshift=5cm')
 pic.set_node(text=nodes.preprocessed_image, options='right of=placeholder2,  xshift=8cm', name='preprocessed_image')
 

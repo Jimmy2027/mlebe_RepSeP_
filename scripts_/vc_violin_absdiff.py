@@ -7,11 +7,12 @@ volume_path = path.abspath('data/volume.csv')
 df = pd.read_csv(volume_path)
 
 df = df.loc[df['Processing'] != 'Unprocessed']
-df = df.loc[((df['Processing'] == 'Masked') | (df['Processing'] == 'Generic'))]
+df = df.loc[((df['Processing'] == 'Masked') | (df['Processing'] == 'Generic'))].rename(
+    columns={'Abs(1 - Vcf)': 'Abs(1 - VCF)'})
 
 ax = violinplot(
     x='Contrast',
-    y='Abs(1 - Vcf)',
+    y='Abs(1 - VCF)',
     data=df,
     hue="Processing",
     saturation=1,
