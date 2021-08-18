@@ -20,7 +20,7 @@ dir = config['workflow_config']['data_path']
 
 mask_dir = '/usr/share/mouse-brain-atlases/'
 
-save_dir = Path(__file__).parent.parent.parent / 'data/preprocessing_examples'
+save_dir = Path('../data') / 'preprocessing_examples'
 save_dir.mkdir(exist_ok=True)
 
 in_data = [
@@ -62,7 +62,7 @@ for o in os.listdir(dir):
                                 mask = np.swapaxes(mask, 0, 1)
                                 mask = np.flipud(mask)
 
-                                plt.imshow(np.squeeze(image), cmap='gray')
+                                plt.imshow(np.squeeze(image), cmap='gray_r')
                                 plt.imshow(np.squeeze(mask), alpha=0.3, cmap='Blues')
                                 plt.axis('off')
                                 plt.savefig(save_dir / f'{t}.png', bbox_inches='tight', pad_inches=0)
