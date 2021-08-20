@@ -1,6 +1,8 @@
 In biomedical imaging, between-subject comparability is attained at the voxel level via image registration.
-This process requires several data preparation steps, of which brain extraction is particularly problematic in preclinical applications.
-Current solutions for small animal neuroimaging registration rely on human brain extraction library adaptations, or full image processing — which introduce artefacts via rostrocaudal cropping and peripheral hyperintensities, respectively.
-\vspace{.8em}
+This process requires several data preparation steps, of which tissue segmentation remains challenging in preclinical research.
+In preclinical neuroimaging, the process of brain extraction is the simplest tissue segmentation process, yet, remains insufficiently accurate in extant registration workflows.
+On account of this, current solutions rely on human brain extraction library adaptations, which introduce artefacts via rostrocaudal cropping.
+Further, advanced workflows aware of brain extraction shortcomings may forego this stem entirely, and insted introduce registration optimizations aiming to function without prior brain extraction --- which may nonetheless remain susceptible to non-brain-tissue hyperintensities.
+\vspace{-.4em}
 
-We present a deep learning framework for multi-contrast MRI brain tissue segmentaion, and benchmark its performance with respect to novel workflow advances.
+Here, we present a deep learning framework for multi-contrast MRI brain tissue classification, and benchmark its performance with respect to improving state-of-the-art registration workflows.
