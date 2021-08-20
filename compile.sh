@@ -20,4 +20,7 @@ else
 	bibtex "${TARGET}" || { echo "bibtex failed"; exit $ERRCODE; }
 	pdflatex -shell-escape "${TARGET}.tex" || { echo "pdflatex failed after bibtex"; exit $ERRCODE; }
 	pdflatex -shell-escape "${TARGET}.tex"
+
+	python scripts_/upload.py "$(pwd)/$(basename "${TARGET}.pdf")"
 fi
+
