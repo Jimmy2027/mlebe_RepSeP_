@@ -74,8 +74,8 @@
 %                            \vspace{-0.3em}
                             \begin{myblock}{Brain extraction framework}
                                 \begin{itemize}
-                                    \item The brain region extraction is done using a trained 3D U-Net \cite{ronneberger_u-net:_2015} which predicts a binary brain mask
-                                    \item The training of the brain extraction classifier is done based on priors obtained by an unmasked workflow transformation from \textcolor{lg}{SAMRI} \cite{irsabi} to a template and using that template as ground truth for the training
+                                    \item The brain region extraction is done using a trained 3D U-Net \cite{ronneberger_u-net:_2015} which predicts a binary brain mask.
+                                    \item The training of the brain extraction classifier is done based on priors obtained by an unmasked workflow transformation from \textcolor{lg}{SAMRI} \cite{irsabi} to a template and using that template as ground truth for the training.
                                     \item Some data optimization steps were added to create the training dataset:
                                     \begin{itemize}
                                         \item expert operators blacklisted incorrect annotations from the priors.
@@ -196,7 +196,7 @@
                                     \item The brain extraction classifier is trained with data that is preprocessed with the SAMRI registration workflow such that no manual labeling is required.
                                     The classifier can thus be easily trained further with additional data that can be obtained via the novel SAMRI Masked workflow.
                                     \item The FOSS distribution model \cite{repsep} for both the classifier and workflow, as well as the article, allows users to easily take advantage of the classifier extendability and recreate the steps described herein.
-                                    \item We make the functions publically available used for the masking in the workflow as well as those used to train the classifier, through the \textcolor{mg}{mlebe} Python package \cite{mlebe}.
+                                    \item We make the functions publically available used for the masking in the workflow as well as those used to train the classifier \cite{mlebe_trainingdata}, through the \textcolor{mg}{mlebe} Python package \cite{mlebe}.
 
                                 \end{itemize}
                             \end{myblock}\vfill
