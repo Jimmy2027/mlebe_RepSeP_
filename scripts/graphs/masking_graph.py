@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from pathlib import Path
 
-from scripts_.graphs import tikz
+from scripts.graphs import tikz
 
 img_dir = Path('data/masking_examples')
 bids_image_path = img_dir / 'bids_image.png'

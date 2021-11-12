@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from pathlib import Path
 
-from scripts_.graphs import tikz
+from scripts.graphs import tikz
 import glob
 
 data_dir = Path('data/reg_comp')

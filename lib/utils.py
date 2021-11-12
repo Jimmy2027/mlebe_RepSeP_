@@ -32,6 +32,78 @@ def float_to_tex(f,
 		return '$'+f_str+'$'
 	return f_str
 
+def inline_factor(summary,
+	factor=None,
+	style="python",
+	max_len=2,
+	pythontex_safe=False,
+	percentile=95,
+	unit=''
+	):
+	"""Typeset factor summary from statsmodels-style summary DataFrame for inline mention.
+
+	Parameters
+	----------
+	df : pandas.DataFrame or statsmodels.ContrastResults
+		Pandas DataFrame object containing an ANOVA summary, or Statsmodels ContrastResults object containing an F-contrast.
+	factor : str, optional
+		String indicating the factor of interest from the summary given by `df`.
+	max_len : int
+		Maximum digit length of output strings.
+	style : {"python", "tex"}, optional
+		What formatting to apply to the string. A simple Python compatible string is returned when selecting "python", whereas a fancier output (decorated with TeX syntax) is returned if selecting "tex".
+	"""
+	import pandas
+	if not type(summary) == pandas.core.frame.DataFrame:
+		summary = summary.tables[1]
+	if style == "python":
+		# The `max_len` formatting does not take effect due to the `g` string formatter.
+		string_template="{{:.{}g}}, CI{{:g}}%=[{{:.{}G}}, {{:.{}G}}]".format(max_len, max_len, max_len)
+		inline = "{:g}, CI{:g}%=[{:2G}, {:2G}]".format(
+			float(summary['Coef.'][factor]),
+			percentile,
+			float(summary['[0.025'][factor]),
+			float(summary['0.975]'][factor]),
+			)
+	elif style == "tex":
+		# Will not work because SIunitx does not accept math mode in the number fields
+		string_template = '\SIci'\
+			'{{{{{{:.{}f}}}}}}'\
+			'{{{{{{}}}}}}'\
+			'{{{{{{}}\%}}}}'\
+			'{{{{{{:.{}f}}}}}}'\
+			'{{{{{{:.{}f}}}}}}'
+		string_template = string_template.format(max_len,max_len,max_len)
+
+		factor_value = float(summary['Coef.'][factor])
+		lower_bound = float(summary['[0.025'][factor])
+		upper_bound = float(summary['0.975]'][factor])
+		inline = string_template.format(
+			factor_value,
+			unit,
+			percentile,
+			lower_bound,
+			upper_bound,
+			)
+		if pythontex_safe:
+			inline = inline.replace("\\","\\\\")
+	elif style == "tex_experimental":
+		# Will not work because SIunitx does not accept math mode in the number fields
+		string_template = '\SIci{{{}}}{{{}}}{{{}\%}}{{{}}}{{{}}}'
+		factor_value = float_to_tex(float(summary['Coef.'][factor]), max_len=max_len)
+		lower_bound = float_to_tex(float(summary['[0.025'][factor]), max_len=max_len)
+		upper_bound = float_to_tex(float(summary['0.975]'][factor]), max_len=max_len)
+		inline = string_template.format(
+			factor_value,
+			unit,
+			percentile,
+			lower_bound,
+			upper_bound,
+			)
+		if pythontex_safe:
+			inline = inline.replace("\\","\\\\")
+	return inline
+
 def inline_anova(anova,
 	factor=None,
 	style="python",

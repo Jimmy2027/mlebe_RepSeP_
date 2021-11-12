@@ -20,8 +20,8 @@ def main():
     file_name = file_path.stem
 
     dest_dir = zot_storage_path / filename2zotkey[file_name]
-    dest_filename = Path(glob(str(dest_dir / "*"))[0]).name
-    if dest_filename:
+    if dest_dir.exists():
+        dest_filename = Path(glob(str(dest_dir / "*"))[0]).name
         shutil.copy(file_path, dest_dir / dest_filename)
 
 

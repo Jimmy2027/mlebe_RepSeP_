@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 TARGET="${1}"
+#poster.tex
 WHITELIST="
-	poster.tex
-
+	article.tex
 	"
 
 if [[ "$TARGET" = "all" ]] || [[ "$TARGET" == "" ]]; then
@@ -21,5 +21,6 @@ else
 	pdflatex -shell-escape "${TARGET}.tex" || { echo "pdflatex failed after bibtex"; exit $ERRCODE; }
 	pdflatex -shell-escape "${TARGET}.tex"
 
+#  python scripts_/upload.py "$(pwd)/$(basename "${TARGET}.pdf")"
 fi
 

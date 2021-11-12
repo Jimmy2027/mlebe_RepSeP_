@@ -59,6 +59,8 @@ generic(bids_base,
         keep_work=config['workflow_config']['keep_work'],
         subjects=subjects,
         masking_config_path=config_path,
+        # temp
+        functional_registration_method='structural'
         # sessions=sessions,
         )
 
@@ -71,4 +73,6 @@ generic(bids_base,
         workflow_name='generic',
         keep_work=config['workflow_config']['keep_work'],
         subjects=subjects,
+        # temp
+        functional_registration_method='structural'
         )

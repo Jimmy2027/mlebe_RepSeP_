@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from scripts_.graphs import tikz
+from scripts.graphs import tikz
 
 
 @dataclass
