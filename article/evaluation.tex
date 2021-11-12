@@ -11,29 +11,29 @@ The average Dice score on the test data set is $D_{coef}= $
 % todo should I give more scores? AUC, ...
 
 
-\begin{sansmath}
-    \py{pytex_fig('scripts/classifier/plt_testset_examples.py',
-    conf='article/wide.conf',
-    label='testset_ex',
-    caption='
-    \\textbf{The Classifier predicts a similar mask to the ground truth.}
-    Randomly picked plots from the test set illustrate the predictions of the classifier.
-    The first row presents the input image, the second the ground truth and the third row shows the predictions of the classifier.
-    ',
-    multicol=True,
-    )}
-\end{sansmath}
+%\begin{sansmath}
+%    \py{pytex_fig('scripts/classifier/plt_testset_examples.py',
+%    conf='article/wide.conf',
+%    label='testset_ex',
+%    caption='
+%    \\textbf{The Classifier predicts a similar mask to the ground truth.}
+%    Randomly picked plots from the test set illustrate the predictions of the classifier.
+%    The first row presents the input image, the second the ground truth and the third row shows the predictions of the classifier.
+%    ',
+%    multicol=True,
+%    )}
+%\end{sansmath}
 
 \subsection{Workflow}
-\begin{sansmath}
-    \py{pytex_fig('scripts/classifier/plt_registration_comparison.py',
-    conf='article/4*2.conf',
-    label='regComp',
-    caption='
-\\textbf{The Masked workflow prevents the shifting of outer-brain region voxels into the template-brain region (in blue).} Comparison of slices from 3 different volumes, registered with the Generic (first row) and the Masked (second row) workflow.',
-    multicol=True,
-    )}
-\end{sansmath}
+%\begin{sansmath}
+%    \py{pytex_fig('scripts/classifier/plt_registration_comparison.py',
+%    conf='article/4*2.conf',
+%    label='regComp',
+%    caption='
+%\\textbf{The Masked workflow prevents the shifting of outer-brain region voxels into the template-brain region (in blue).} Comparison of slices from 3 different volumes, registered with the Generic (first row) and the Masked (second row) workflow.',
+%    multicol=True,
+%    )}
+%\end{sansmath}
 
 We use an established palette of workflow evaluation metrics --- inspecting volume and smoothness conservation, as well as downstream effects on basic functional analysis \citep{ioanas_optimized_2019} --- to benchmark the novel SAMRI Masked workflow against the SAMRI Generic workflow.
 Statistics for the Volume Conservation and the Smoothness Conservation are presented with respect to the distributions of the absolute distances to the optimal value 1.

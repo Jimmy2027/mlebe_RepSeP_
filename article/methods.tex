@@ -1,27 +1,28 @@
+% todo give total number of scans that were usied for trianing and testing
 \section{Methods}\label{sec:methods}
 For the benchmarking of the two workflows, the same methods that are described in the original paper have been applied in this work.
 A more detailed description can be found there.
 
-\begin{sansmath}
-\py{pytex_subfigs(
-        [
-                {'script':'scripts/classifier/uprepex.py', 'label':'exunprepro', 'conf':'article/1col.conf', 'options_pre':'{.48\\textwidth} \\vspace{-2em}',
-                        'options_pre_caption':'\\vspace{0.1em}',
-                        'options_post':'\\vspace{1em}',
-                        'caption':'Example of an unpreprocessed slice.'
-                        ,},
-                {'script':'scripts/classifier/prepex.py', 'label':'exprepro', 'conf':'article/1col.conf', 'options_pre':'{.48\\textwidth} \\vspace{-2em}',
-                        'options_pre_caption':'\\vspace{0.1em}',
-                        'options_post':'\\vspace{1em}',
-                        'caption':'Example of a preprocessed slice.'
-                        ,},
-                ],
-        caption='\\textbf{The preprocessing removes the mask there, where the image-pixelvalues are 0.}\\
-        Plots of the same image, superposed with the template mask, with and without preprocessing.
-        ',
-        label='fig:prepro_examples',
-        )}
-\end{sansmath}
+%\begin{sansmath}
+%\py{pytex_subfigs(
+%        [
+%                {'script':'scripts/classifier/uprepex.py', 'label':'exunprepro', 'conf':'article/1col.conf', 'options_pre':'{.48\\textwidth} \\vspace{-2em}',
+%                        'options_pre_caption':'\\vspace{0.1em}',
+%                        'options_post':'\\vspace{1em}',
+%                        'caption':'Example of an unpreprocessed slice.'
+%                        ,},
+%                {'script':'scripts/classifier/prepex.py', 'label':'exprepro', 'conf':'article/1col.conf', 'options_pre':'{.48\\textwidth} \\vspace{-2em}',
+%                        'options_pre_caption':'\\vspace{0.1em}',
+%                        'options_post':'\\vspace{1em}',
+%                        'caption':'Example of a preprocessed slice.'
+%                        ,},
+%                ],
+%        caption='\\textbf{The preprocessing removes the mask there, where the image-pixelvalues are 0.}\\
+%        Plots of the same image, superposed with the template mask, with and without preprocessing.
+%        ',
+%        label='fig:prepro_examples',
+%        )}
+%\end{sansmath}
 
 \subsection{Model}
 As the architecture of the classifier, the U-Net from \cite{ronneberger_u-net:_2015} was chosen based on its high performance in the field of biomedical image segmentation.
@@ -34,8 +35,9 @@ In our use case this implementation helped reduce false positive classifications
 
 The model was trained using the Dice loss, which is computed from the Dice score.
 It calculates the similarity of two binary samples X and Y with
-\begin{equation}\label{eqDcoef}
-D_{coef} = \frac {2|X\cap Y| + \epsilon}{|X|+|Y| + \epsilon}
+\begin{equation}
+    \label{eqDcoef}
+    D_{coef} = \frac {2|X\cap Y| + \epsilon}{|X|+|Y| + \epsilon}
 \end{equation}
 where a smoothing factor $\epsilon$ of 0.01 is used.
 
@@ -120,26 +122,29 @@ Additionally, the binary mask is resampled into its original affine space, befor
 The VCF uses the 66\textsuperscript{th} voxel intensity percentile of the raw scan before any processing as definition of the brain volume.
 The VCF is then obtained with \cref{eq:vcf}, where $v$ is the voxel volume in the original space, $v^\prime$ the voxel volume in the transformed space, $n$ the number of voxels in the original space, $m$ the number of voxels in the transformed space, $s$ a voxel value sampled from the vector $S$ containing all values in the original data, and $s^\prime$ a voxel value sampled from the transformed data.
 
-\begin{equation} \label{eq:vcf}
-        V\!C\!F
-        = \frac{v^\prime\sum_{i=1}^m [s^\prime_i \geq P_{66}(S)]}{v\sum_{i=1}^n [s_i \geq P_{66}(S)]}
-        = \frac{v^\prime\sum_{i=1}^m [s^\prime_i \geq P_{66}(S)]}{v \lceil0.66n\rceil}
+\begin{equation}
+    \label{eq:vcf}
+    V\!C\!F
+    = \frac{v^\prime\sum_{i=1}^m [s^\prime_i \geq P_{66}(S)]}{v\sum_{i=1}^n [s_i \geq P_{66}(S)]}
+    = \frac{v^\prime\sum_{i=1}^m [s^\prime_i \geq P_{66}(S)]}{v \lceil0.66n\rceil}
 \end{equation}
 
 The SCF metric is based on the ratio of smoothness before and after processing.
 It is obtained by taking the full-width at half-maximum of the signal amplitude spatial autocorrelation function (ACF \cite{eklund2016cluster}).
 In \cref{eq:acf}, $r$ is the distance of two amplitude distribution samples, $a$ is the relative weight of the Gaussian term in the model, $b$ is the width of the Gaussian and $c$ the decay of the mono-exponential term \cite{cox2017fmri}.
 
-\begin{equation} \label{eq:acf}
-        ACF(r)
-        = a * e^{ -r^{2}/ (2 * b^{2}) } + (1 - a) + e^{-r/c}
+\begin{equation}
+    \label{eq:acf}
+    ACF(r)
+    = a * e^{ -r^{2}/ (2 * b^{2}) } + (1 - a) + e^{-r/c}
 \end{equation}
 
 The for the MS relevant statistical power is obtained via the negative logarithm of first-level p-value maps.
 Voxelwise statistical estimates for the probability that a time course could --- by chance alone --- be at least as well correlated with the stimulation regressor as the voxel time course measured are averaged via \cref{eq:ms}, where $n$ represents the number of statistical estimates in the scan, and $p$ is a p-value.
 
-\begin{equation} \label{eq:ms}
-        M\!S = \frac{\sum_{i=1}^n -log(p_i)}{n}
+\begin{equation}
+    \label{eq:ms}
+    M\!S = \frac{\sum_{i=1}^n -log(p_i)}{n}
 \end{equation}
 
 \subsection{Statistics}
